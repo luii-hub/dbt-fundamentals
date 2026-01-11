@@ -1,8 +1,8 @@
 services:
   # The Postgres Data Warehouse
-  db:
+  postgres:
     image: postgres:15-alpine
-    container_name: postgres_db
+    container_name: postgres
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
@@ -31,7 +31,7 @@ services:
     command: ["sleep", "infinity"]
 
     depends_on:
-      - db
+      - postgres
     
 
 volumes:
