@@ -1,0 +1,38 @@
+services:
+  # The Postgres Data Warehouse
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbt_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # The dbt Runner
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:latest
+    container_name: dbt_core
+    volumes:
+      - .:/usr/app/
+      - ~/.dbt:/root/.dbt 
+    environment:
+      - ADAPTER_HOST=postgres # Match your DB service name
+      - ADAPTER_USER=admin
+      - ADAPTER_PASSWORD=password
+      - ADAPTER_DB=dbt_db
+      - ADAPTER_SCHEMA=dbt_db
+
+    # Keep the container running for interactive use 
+    entrypoint: "" 
+    command: ["sleep", "infinity"]
+
+    depends_on:
+      - db
+    
+
+volumes:
+  postgres_data:
