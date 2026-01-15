@@ -1,33 +1,11 @@
--- Since we are editing SQL in a code editor, we must follow the database rules of PostgreSQL, 
--- which folds unquoted identifiers to lowercase.
--- Therefore, we will use lowercase for all identifiers in this file.
--- If we wanted to preserve casing, we would need to double quote all identifiers,
--- which is not a common practice in dbt projects.
-
--- Check dbt_fundamentals/dbt_project.yml and how it configures the models. Use 'dbt seed --full-refresh'
--- to load the raw.jaffle_shop_customers and raw.jaffle_shop_orders tables before running.
-
 with customers as (
 
-    select
-        id as customer_id,
-        first_name,
-        last_name
-
-    from raw.jaffle_shop_customers
+    select * from {{ ref('stg_jaffle_shop__customers') }}
 
 ),
 
 orders as (
-
-    select
-        id as order_id,
-        user_id as customer_id,
-        order_date,
-        status
-
-    from raw.jaffle_shop_orders
-
+    select * from {{ ref('stg_jaffle_shop__orders') }}
 ),
 
 customer_orders as (
