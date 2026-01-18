@@ -5,8 +5,13 @@ with customers as (
 ),
 
 orders as (
-    select * from {{ ref('stg_jaffle_shop__orders') }}
+    select * from {{ ref('fct_orders') }}
 ),
+
+payments as (
+    select * from {{ ref('stg_stripe__payments')}}
+),
+
 
 customer_orders as (
 
@@ -23,6 +28,23 @@ customer_orders as (
 
 ),
 
+lifetime_expenses as (
+
+    SELECT 
+
+        c.customer_id,
+        SUM(p.amount) AS lifetime_expenses
+
+    FROM payments p 
+
+    JOIN orders o ON o.order_id = p.order_id
+    JOIN customers c ON c.customer_id = o.customer_id 
+
+    GROUP BY c.customer_id 
+    ORDER BY lifetime_expenses DESC
+    
+),
+
 
 final as (
 
@@ -32,11 +54,15 @@ final as (
         customers.last_name,
         customer_orders.first_order_date,
         customer_orders.most_recent_order_date,
-        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders,
+        coalesce(lifetime_expenses.lifetime_expenses, 0) as lifetime_expenses
+
+
 
     from customers
 
     left join customer_orders using (customer_id)
+    left join lifetime_expenses using (customer_id)
 
 )
 
