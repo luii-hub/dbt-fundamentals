@@ -34,7 +34,13 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   dbt_fundamentals:
-    +materialized: view
+    staging:
+      +materialized: view # staging models are best for views
+
+    # marts are best as tables for performance since most downstreams tables
+    # are typically queried by end users (BI tools, data scientists, etc)
+    marts:
+      +materialized: table 
 
 seeds: 
   +quote_columns: false # let the database handle casing of column names
