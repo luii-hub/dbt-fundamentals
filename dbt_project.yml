@@ -36,11 +36,13 @@ models:
   dbt_fundamentals:
     staging:
       +materialized: view # staging models are best for views
+      +schema: staging
 
     # marts are best as tables for performance since most downstreams tables
     # are typically queried by end users (BI tools, data scientists, etc)
     marts:
       +materialized: table 
+      +schema: marts
 
 seeds: 
   +quote_columns: false # let the database handle casing of column names
