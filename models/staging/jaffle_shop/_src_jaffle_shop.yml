@@ -13,6 +13,7 @@ sources:
       loaded_at_field: _etl_loaded_at
     tables:
       - name: customers
+        freshness: null # override source-level freshness to disable for this table since we dont have any SLAs on it
       - name: orders
         # config: 
         #   freshness:
