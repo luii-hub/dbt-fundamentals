@@ -1,0 +1,6 @@
+sources:
+  - name: stripe
+    database: jaffle_shop
+    schema: raw
+    tables:
+      - name: stripe_payments
