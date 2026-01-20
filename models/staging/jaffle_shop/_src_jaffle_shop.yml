@@ -25,7 +25,7 @@ sources:
             data_tests:
               - unique
               - not_null
-              
+
         # We can also define source freshness criteria to help us monitor data quality and 
         # reliability. This is entirely optional, but recommended for production projects.
         # For more information, see: https://docs.getdbt.com/docs/building-a-dbt-project/sources/freshness
@@ -50,7 +50,7 @@ models:
   - name: stg_jaffle_shop__orders
     columns:
       - name: order_id # our primary key
-        data_tests:
+        tests:
         - unique
         - not_null
       - name: customer_id
