@@ -15,6 +15,11 @@ sources:
       - name: jaffle_shop_customers
         freshness: null # override source-level freshness to disable for this table since we dont have any SLAs on it
       - name: jaffle_shop_orders
+
+        # We can also define source freshness criteria to help us monitor data quality and 
+        # reliability. This is entirely optional, but recommended for production projects.
+        # For more information, see: https://docs.getdbt.com/docs/building-a-dbt-project/sources/freshness
+        # We can have this in sources or model level
         # config: 
         #   freshness:
         #     warn_after:
@@ -25,9 +30,19 @@ sources:
         #       period: hour
         #   loaded_at_field: _etl_loaded_at
 
-# We can also define source freshness criteria to help us monitor data quality and 
-# reliability. This is entirely optional, but recommended for production projects.
-# For more information, see: https://docs.getdbt.com/docs/building-a-dbt-project/sources/freshness
-# We can have this in sources or model level
-
-
+models:
+  - name: stg_jaffle_shop__customers
+    columns:
+      - name: customer_id # our primary key
+        data_tests: 
+        - unique
+        - not_null
+  - name: stg_jaffle_shop__orders
+    columns:
+      - name: order_id # our primary key
+        data_tests:
+        - unique
+        - not_null
+      - name: customer_id
+        data_tests:
+        - not_null
