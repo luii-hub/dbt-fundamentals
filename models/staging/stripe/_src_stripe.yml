@@ -2,5 +2,28 @@ sources:
   - name: stripe
     database: jaffle_shop
     schema: raw
+    description: "A clone of a Stripe Payments from the Postgres application database"
     tables:
       - name: stripe_payments
+        description: "Raw Stripe payments data"
+        columns:
+          - name: id
+            description: "Primary key for raw payments in Stripe"
+            data_tests:
+              - unique
+              - not_null
+          - name: orderid
+            description: "Foreign key to the raw orders table"
+            data_tests:
+              - not_null
+              - relationships:
+                  field: id # id in raw orders
+                  to: source('jaffle_shop', 'jaffle_shop_orders')
+          - name: paymentmethod
+            description: "The payment method used"
+          - name: status
+            description: "The status of the payment"
+          - name: amount
+            description: "The amount paid"
+          - name: created
+            description: "The timestamp when the payment was created"

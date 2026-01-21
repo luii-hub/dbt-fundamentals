@@ -15,13 +15,17 @@ sources:
     tables:
       - name: jaffle_shop_customers
         description: "Raw customers data"
+        freshness: null # override source-level freshness to disable for this table since we dont have any SLAs on it
         columns:
           - name: id
             description: "Primary key for raw customers in the jaffle shop"
             data_tests:
               - unique
               - not_null
-        freshness: null # override source-level freshness to disable for this table since we dont have any SLAs on it
+          - name: first_name
+            description: "Customer first name"
+          - name: last_name
+            description: "Customer last name"
       - name: jaffle_shop_orders
         description: "Raw orders data"
         columns:
@@ -30,6 +34,17 @@ sources:
             data_tests:
               - unique
               - not_null
+          - name: user_id
+            description: "Foreign key to the raw customers table"
+            data_tests:
+              - not_null
+              - relationships:
+                  field: id
+                  to: source('jaffle_shop', 'jaffle_shop_customers')
+          - name: order_date
+            description: "The date the order was placed"
+          - name: order_status
+            description: "The status of the order"
 
         # We can also define source freshness criteria to help us monitor data quality and 
         # reliability. This is entirely optional, but recommended for production projects.
@@ -44,38 +59,3 @@ sources:
         #       count: 12
         #       period: hour
         #   loaded_at_field: _etl_loaded_at
-
-models:
-  - name: stg_jaffle_shop__customers
-    description: "The grain of this table is one unique customer per row"
-    columns:
-      - name: customer_id 
-        description: "Primary key for customers in the jaffle shop"
-        data_tests: 
-        - unique
-        - not_null
-  - name: stg_jaffle_shop__orders
-    description: "The grain of this table is one unique order per row"
-    columns:
-      - name: order_id
-        description: "Primary key for orders in the jaffle shop"
-        data_tests:
-        - unique
-        - not_null
-      - name: customer_id
-        data_tests:
-        - not_null
-        - relationships:
-            field: customer_id
-            to: ref('stg_jaffle_shop__customers')
-      - name: order_status
-        description: "{{ doc('order_status') }}"
-        data_tests:
-          - accepted_values: 
-              values:
-                - completed
-                - shipped
-                - returned
-                - placed
-                - return_pending
-        
