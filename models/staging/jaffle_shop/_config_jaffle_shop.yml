@@ -2,6 +2,7 @@ sources:
   - name: jaffle_shop
     database: jaffle_shop
     schema: raw
+    description: "A clone of a Postgres application database"
     config: 
       freshness:
         warn_after:
@@ -13,15 +14,19 @@ sources:
       loaded_at_field: _etl_loaded_at
     tables:
       - name: jaffle_shop_customers
+        description: "Raw customers data"
         columns:
           - name: id
+            description: "Primary key for raw customers in the jaffle shop"
             data_tests:
               - unique
               - not_null
         freshness: null # override source-level freshness to disable for this table since we dont have any SLAs on it
       - name: jaffle_shop_orders
+        description: "Raw orders data"
         columns:
           - name: id
+            description: "Primary key for raw orders in the jaffle shop"
             data_tests:
               - unique
               - not_null
@@ -29,7 +34,7 @@ sources:
         # We can also define source freshness criteria to help us monitor data quality and 
         # reliability. This is entirely optional, but recommended for production projects.
         # For more information, see: https://docs.getdbt.com/docs/building-a-dbt-project/sources/freshness
-        # We can have this in sources or model level
+        # We can have this in sources or m level
         # config: 
         #   freshness:
         #     warn_after:
@@ -42,15 +47,19 @@ sources:
 
 models:
   - name: stg_jaffle_shop__customers
+    description: "The grain of this table is one unique customer per row"
     columns:
-      - name: customer_id # our primary key
+      - name: customer_id 
+        description: "Primary key for customers in the jaffle shop"
         data_tests: 
         - unique
         - not_null
   - name: stg_jaffle_shop__orders
+    description: "The grain of this table is one unique order per row"
     columns:
-      - name: order_id # our primary key
-        tests:
+      - name: order_id
+        description: "Primary key for orders in the jaffle shop"
+        data_tests:
         - unique
         - not_null
       - name: customer_id
@@ -60,6 +69,7 @@ models:
             field: customer_id
             to: ref('stg_jaffle_shop__customers')
       - name: order_status
+        description: "{{ doc('order_status') }}"
         data_tests:
           - accepted_values: 
               values:
